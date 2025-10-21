@@ -6,6 +6,6 @@ class MainTest {
 
     @Test
     fun `main can launch`() {
-        main(args = arrayOf("acceptPort=8080", "acceptTimeout=100"))
+        main(args = arrayOf("acceptPort=8080", "acceptTimeout=100", "restartOnTimeout=false"))
     }
 }

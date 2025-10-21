@@ -1,5 +1,6 @@
 package dev.j4d.socketserver.clientlistener
 
+import dev.j4d.socketserver.client.Client
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -8,22 +9,33 @@ import java.net.SocketException
 
 class ClientListener(
     private val acceptPort: Int,
-    private val acceptTimeout: Long
+    private val acceptTimeout: Long,
+    private val restartOnTimeout: Boolean
 ) {
+    private var running = true
 
-    fun listen() {
-        try {
-            println("Listening for clients on port: $acceptPort")
-            val server = ServerSocket(acceptPort)
-            runBlocking(Dispatchers.IO) {
+    fun listen() = runBlocking(Dispatchers.IO) {
+        while (running) {
+            try {
+                println("Listening for clients on port: $acceptPort")
+                val server = ServerSocket(acceptPort)
                 launch {
                     Thread.sleep(acceptTimeout)
                     server.close()
                 }
+
+                val socket = server.accept()
+
+                launch {
+                    Client(socket).run()
+                }
+
+                server.close()
+            } catch (_: SocketException) {
+                if (!restartOnTimeout) {
+                    running = false
+                }
             }
-            val client = server.accept()
-        } catch (_: SocketException) {
-            println("Server closed")
         }
     }
 }

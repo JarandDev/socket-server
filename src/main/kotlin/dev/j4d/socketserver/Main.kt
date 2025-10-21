@@ -7,7 +7,8 @@ fun main(args: Array<String> = emptyArray()) {
 
     val clientListener = ClientListener(
         acceptPort = arguments["acceptPort"]?.toInt() ?: 8080,
-        acceptTimeout = arguments["acceptTimeout"]?.toLong() ?: 60_000L
+        acceptTimeout = arguments["acceptTimeout"]?.toLong() ?: 60_000L,
+        restartOnTimeout = arguments["restartOnTimeout"]?.toBoolean() ?: true
     )
 
     clientListener.listen()
