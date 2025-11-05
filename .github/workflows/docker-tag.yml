@@ -38,5 +38,6 @@ jobs:
 
       - name: Tag Docker image
         run: |
+          docker pull ghcr.io/jaranddev/socket-server@${{ env.OLD_TAG }}
           docker tag ghcr.io/jaranddev/socket-server@${{ env.OLD_TAG }} ghcr.io/jaranddev/socket-server:${{ env.NEW_TAG }}
           docker push ghcr.io/jaranddev/socket-server:${{ env.NEW_TAG }}
