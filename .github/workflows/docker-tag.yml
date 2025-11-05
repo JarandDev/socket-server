@@ -1,0 +1,42 @@
+name: Docker
+
+on:
+  workflow_dispatch:
+    inputs:
+      oldTag:
+        description: "Old tag"
+        type: string
+        required: true
+      newTag:
+        description: "New tag"
+        type: string
+        required: true
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  OLD_TAG: ${{ inputs.oldTag }}
+  NEW_TAG: ${{ inputs.newTag }}
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+
+    steps:
+
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@343f7c4344506bcbf9b4de18042ae17996df046d # v3.0.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Tag Docker image
+        run: |
+          docker tag ghcr.io/jaranddev/socket-server:${{ env.OLD_TAG }} ghcr.io/jaranddev/socket-server:${{ env.NEW_TAG }}
+          docker push ghcr.io/jaranddev/socket-server:${{ env.NEW_TAG }}
